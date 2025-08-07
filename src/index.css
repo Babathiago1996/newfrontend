@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+.bg-team{
+    background-image: url("./assets/prettyface.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    object-fit: cover;
+}
+.bg-image{
+ background-image: url("./assets/gooddesign.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    object-fit: cover;
+
+}
