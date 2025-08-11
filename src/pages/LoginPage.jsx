@@ -22,7 +22,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { user, dispatch } = useAuthContext();
   const handleLogin = async (data) => {
-    const { email, password } = data;
     setIsloading(true);
 
     try {
@@ -33,7 +32,7 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email: data.email, password: data.password }),
         }
       );
       const json = await response.json();
@@ -132,7 +131,7 @@ const LoginPage = () => {
                 ? " hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 : "bg-gray-400 cursor-not-allowed"
             }`}
-            disabled={isloading || isValid}
+            disabled={isloading || !isValid}
           >
             {isloading ? (
               <div className="flex gap-2 justify-center items-center">
