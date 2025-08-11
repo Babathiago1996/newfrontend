@@ -58,7 +58,7 @@ const WorkoutForm = () => {
         {" "}
         Add A New Workout
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4">
         <div>
           <label className="block mb-1 font-medium text-2xl">
             Exercise Title <sup className="text-red-500">*</sup>

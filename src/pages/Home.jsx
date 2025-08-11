@@ -55,8 +55,8 @@ const Home = () => {
     fetchdata();
   }, [dispatch, user]);
   return (
-    <div className="bg-image h-screen">
-      <div className=" flex flex-col md:flex-row p-4 gap-8 max-w-7xl mx-auto">
+    <div className="bg-image min-h-screen py-10 px-4">
+      <div className=" flex flex-col md:flex-row  gap-8 max-w-7xl mx-auto">
         <div className="md:w-2/3 space-y-4">
           <h1 className="text-4xl font-bold mb-2 text-white ">
             Workout History
@@ -69,17 +69,17 @@ const Home = () => {
               return <WorkoutDetails key={workout._id} workout={workout} />;
             })
           ) : (
-            <div className="text-center text-gray-50 text-lg md:text-[35px] font-bold mt-10 flex flex-col items-center">
-              <div className="flex gap-1">
-                <FiFrown className="text-7xl text-blue-500 mb-2" />
-                <BiDumbbell className="text-7xl text-blue-500 mb-2" />
+            <div className="text-center text-white mt-20">
+              <div className="flex gap-4 mb-4 justify-center">
+                <FiFrown className="text-7xl text-blue-400" />
+                <BiDumbbell className="text-7xl text-blue-400 mb-2" />
               </div>
-              No workouts Found
-              <Link to="/create">
-                <p className="hover:underline hover:text-green-200 hover:text-[27px] text-2xl hover:font-bold ">
-                  {" "}
-                  create a workout
-                </p>
+              <p className="text-2xl font-semibold mb-6"> No workouts Found</p>{" "}
+              <Link
+                to="/create"
+                className="inline-block text-lg px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow-lg transition-all duration-200"
+              >
+                Create a Workout
               </Link>
             </div>
           )}
