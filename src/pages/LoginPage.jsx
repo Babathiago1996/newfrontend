@@ -22,6 +22,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { user, dispatch } = useAuthContext();
   const handleLogin = async (data) => {
+    const { email, password } = data;
     setIsloading(true);
 
     try {
@@ -32,7 +33,7 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email: data.email, password: data.password }),
+          body: JSON.stringify({ email, password }),
         }
       );
       const json = await response.json();
@@ -90,10 +91,13 @@ const LoginPage = () => {
               aria-label="Enter your Password"
               {...register("password", {
                 required: "password is required",
-                minLength: {
+                pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/,
                   message:
                     "Password must be atleast 8 character,including UpperCase,LowerCase and special character",
+                },
+                minLength: {
+                  value: 8,
                 },
               })}
               className={`mt-1 w-full px-4 pt-2 border rounded-lg h-[50px] outline-none ${
