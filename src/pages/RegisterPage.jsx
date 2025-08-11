@@ -33,7 +33,7 @@ const RegisterPage = () => {
       const json = await response.json();
       if (response.ok) {
         toast.success(json.message);
-        navigate("/verify-otp", { state: { email } });
+        navigate("/verify-otp", { state: { email: data.email } });
       } else {
         toast.error(json.message || "registration Failed");
       }
