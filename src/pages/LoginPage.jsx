@@ -91,7 +91,7 @@ const LoginPage = () => {
               {...register("password", {
                 required: "password is required",
                 minLength: {
-                  value: 8,
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/,
                   message:
                     "Password must be atleast 8 character,including UpperCase,LowerCase and special character",
                 },
