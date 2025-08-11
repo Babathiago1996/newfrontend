@@ -71,19 +71,19 @@ const RegisterPage = () => {
               })}
               className={`w-full p-2 border  rounded-lg outline-none ${
                 errors.email
-                  ? "border-red-500 border-2 "
+                  ? "border-red-400 border-2 "
                   : " border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               }`}
             />
             {errors.email && (
-              <p className="text-sm text-red-500 mt-1">
+              <p className="text-sm text-red-400 mt-1">
                 {errors.email.message}
               </p>
             )}
           </div>
           <div className="mb-4 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Password<sup className="text-red-500">*</sup>
+              Password<sup className="text-red-400">*</sup>
             </label>
             <input
               type={showpassword ? "text" : "password"}
@@ -97,7 +97,7 @@ const RegisterPage = () => {
               className={`w-full p-2 border rounded-lg outline-none 
                 ${
                   errors.password
-                    ? "border-red-500 border-2"
+                    ? "border-red-400 border-2"
                     : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 "
                 }`}
             />
@@ -113,7 +113,7 @@ const RegisterPage = () => {
               )}
             </div>
             {errors.password && (
-              <p className="text-sm text-red-500 mt-1">
+              <p className="text-sm text-red-400 mt-1">
                 {errors.password.message}
               </p>
             )}

@@ -17,12 +17,11 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm();
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
   const navigate = useNavigate();
   const { user, dispatch } = useAuthContext();
   const handleLogin = async (data) => {
-    const { email, password } = data;
     setIsloading(true);
 
     try {
@@ -33,7 +32,7 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email: data.email, password: data.password }),
         }
       );
       const json = await response.json();
@@ -59,18 +58,30 @@ const LoginPage = () => {
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
             Login
           </h2>
-          <input
-            type="email"
-            placeholder="Enter your registered email"
-            aria-label="Enter your Email"
-            {...register("email", { required: "Email is required" })}
-            className={`mt-1 w-full px-4 py-2 border h-[50px] ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200`}
-          />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600 ">{errors.email.message}</p>
-          )}
+          <div>
+            <input
+              type="email"
+              placeholder="Enter your registered email"
+              aria-label="Enter your Email"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Enter a valid email address",
+                },
+              })}
+              className={`mt-1 w-full px-4 py-2 border h-[50px] outline-none rounded-lg ${
+                errors.email
+                  ? "border-red-400 border-2"
+                  : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              }  `}
+            />
+            {errors.email && (
+              <p className=" mt-1 text-sm text-red-600 ">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
           <div className="relative mb-4">
             <input
               type={showpassword ? "text" : "password"}
@@ -82,12 +93,14 @@ const LoginPage = () => {
                 minLength: {
                   value: 8,
                   message:
-                    "Password must be atleast 8 character,including UpperCase,LowerCase and sign",
+                    "Password must be atleast 8 character,including UpperCase,LowerCase and special character",
                 },
               })}
-              className={`mt-1 w-full px-4 pt-2 border  h-[50px] ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200`}
+              className={`mt-1 w-full px-4 pt-2 border rounded-lg h-[50px] outline-none ${
+                errors.password
+                  ? "border-red-400 border-2"
+                  : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              }  `}
             />
             <div
               className="absolute top-5 right-3 cursor-pointer text-gray-600"
@@ -110,8 +123,12 @@ const LoginPage = () => {
           </Link>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
-            disabled={isloading}
+            className={`w-full bg-blue-600 text-white py-2 rounded-lg transition duration-200 ${
+              isValid
+                ? " hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={isloading || isValid}
           >
             {isloading ? (
               <div className="flex gap-2 justify-center items-center">
