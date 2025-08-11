@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuthContext } from "../hooks/useAuthContext";
-const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const VerifyOtpPage = () => {
   const { state } = useLocation();
@@ -34,11 +33,14 @@ const VerifyOtpPage = () => {
       return;
     }
     try {
-      const response = await fetch(`${API_URL}/api/user/verifyOtp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
+      const response = await fetch(
+        "https://newbackendfresh.onrender.com/api/user/verifyOtp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp }),
+        }
+      );
       const json = await response.json();
       if (response.ok) {
         localStorage.setItem("user", JSON.stringify(json));
@@ -54,13 +56,16 @@ const VerifyOtpPage = () => {
   };
   const handleResend = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/user/resend-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        "https://newbackendfresh.onrender.com/api/user/resend-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
       const json = await response.json();
       if (response.ok) {
         toast.success(json.message);

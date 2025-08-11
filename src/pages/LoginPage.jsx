@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 import team from "../assets/prettyface.jpg";
-const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const LoginPage = () => {
   const [showpassword, setShowPassword] = useState(false);
@@ -23,13 +22,16 @@ const LoginPage = () => {
   const handleLogin = async (data) => {
     const { email, password } = data;
     try {
-      const response = await fetch(`${API_URL}/api/user/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "https://newbackendfresh.onrender.com/api/user/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
       const json = await response.json();
       if (response.ok) {
         localStorage.setItem("user", JSON.stringify(json));

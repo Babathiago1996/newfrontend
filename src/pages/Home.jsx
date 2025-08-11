@@ -10,7 +10,6 @@ import { BiDumbbell } from "react-icons/bi";
 import { FiFrown } from "react-icons/fi";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { Link } from "react-router-dom";
-const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Home = () => {
   const { workouts, dispatch } = useWorkoutContext();
@@ -27,11 +26,14 @@ const Home = () => {
     }
     const fetchdata = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/workouts`, {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
+        const response = await fetch(
+          "https://newbackendfresh.onrender.com/api/workouts",
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
         const json = await response.json();
 
         if (response.ok) {

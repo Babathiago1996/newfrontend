@@ -15,7 +15,7 @@ const ForgotPasswordPage = () => {
     const email = data.email;
     console.log("form submitted with ", data);
     const response = await fetch(
-      "https://workout-project-1.onrender.com/api/user/forgot-password",
+      "https://newbackendfresh.onrender.com/api/user/forgot-password",
       {
         method: "POST",
         headers: {
@@ -31,7 +31,6 @@ const ForgotPasswordPage = () => {
     } else {
       toast.error(json.error.message);
     }
-    
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

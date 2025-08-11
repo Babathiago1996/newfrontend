@@ -5,7 +5,6 @@ import { ToastContainer, toast } from "react-toastify";
 import { FaClipboardCheck } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
-const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const WorkoutForm = () => {
   const [title, setTitle] = useState("");
@@ -26,14 +25,17 @@ const WorkoutForm = () => {
       return;
     }
     const workout = { title, load, reps };
-    const response = await fetch(`${API_URL}/api/workouts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      },
-      body: JSON.stringify(workout),
-    });
+    const response = await fetch(
+      "https://newbackendfresh.onrender.com/api/workouts",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify(workout),
+      }
+    );
     const json = await response.json();
     if (!response.ok) {
       setError(json.error || "workout creation failed");
