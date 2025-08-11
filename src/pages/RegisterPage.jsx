@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import team from "../assets/workoutApplogo.jpg";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -14,16 +15,13 @@ const RegisterPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "https://newbackendfresh.onrender.com/api/user/signUp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch(`${API_URL}/api/user/signUp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
       const json = await response.json();
       if (response.ok) {
         toast.success(json.message);
