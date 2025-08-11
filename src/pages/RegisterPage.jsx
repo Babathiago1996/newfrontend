@@ -4,14 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import team from "../assets/workoutApplogo.jpg";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useForm } from "react-hook-form";
+import { ClipLoader } from "react-spinners";
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showpassword, setShowPassword] = useState(false);
+  const [isloading, setIsloading] = useState(false);
   const navigate = useNavigate();
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
+  const handleRegister = async (data) => {
+    setIsloading(true);
 
     try {
       const response = await fetch(
@@ -21,7 +27,7 @@ const RegisterPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email: data.email, password: data.password }),
         }
       );
       const json = await response.json();
@@ -33,6 +39,8 @@ const RegisterPage = () => {
       }
     } catch (error) {
       toast.error("an error occured. please try again.");
+    } finally {
+      setIsloading(false);
     }
   };
 
@@ -43,7 +51,7 @@ const RegisterPage = () => {
       </div>
       <div className="md:w-1/2 w-full px-4 md:px-8 py-10 bg-gray-100 flex justify-center">
         <form
-          onSubmit={handleRegister}
+          onSubmit={handleSubmit(handleRegister)}
           className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
         >
           <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
@@ -53,10 +61,25 @@ const RegisterPage = () => {
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your email"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Enter a valid email address",
+                },
+              })}
+              className={`w-full p-2 border rounded outline-none ${
+                errors.email
+                  ? "border-red-500 border-2 "
+                  : " border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              }`}
             />
+            {errors.email && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
           <div className="mb-4 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -64,10 +87,21 @@ const RegisterPage = () => {
             </label>
             <input
               type={showpassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full relative p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register("password", {
+                required: "Password is required",
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/,
+                  message: "Min 8 chars, upper, lower, number & special char",
+                },
+              })}
+              className={`w-full p-2 border rounded outline-none
+                ${
+                  errors.password
+                    ? "border-red-500 border-2"
+                    : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                }`}
             />
+
             <div
               className="absolute top-10 right-3 cursor-pointer text-gray-600"
               onClick={() => setShowPassword((prev) => !prev)}
@@ -78,12 +112,28 @@ const RegisterPage = () => {
                 <AiOutlineEye size={20} />
               )}
             </div>
+            {errors.password && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-200"
+            className={`w-full text-white p-2 rounded transition duration-200 ${
+              isValid
+                ? " bg-blue-500  hover:bg-blue-600"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={isloading || !isValid}
           >
-            Sign Up
+            {isloading ? (
+              <div className="flex gap-2 justify-center items-center">
+                <ClipLoader size={20} color="#FFD700" /> registering...
+              </div>
+            ) : (
+              " Sign Up"
+            )}
           </button>
           <ToastContainer />
         </form>

@@ -8,6 +8,7 @@ const VerifyOtpPage = () => {
   const { state } = useLocation();
   const [otp, setOtp] = useState("");
   const [counter, setCounter] = useState(60);
+  const [isloading, setIsloading] = useState(false);
   const email = state?.email;
   const navigate = useNavigate();
   const { dispatch } = useAuthContext();
@@ -28,6 +29,7 @@ const VerifyOtpPage = () => {
     return () => clearInterval(timer);
   }, [counter]);
   const handleVerify = async () => {
+    setIsloading(true);
     if (!otp || otp.length !== 4 || isNaN(otp)) {
       toast.error("please enter a valid 4-digit OTP");
       return;
@@ -52,6 +54,8 @@ const VerifyOtpPage = () => {
       }
     } catch (error) {
       toast.error(error.message || "Network error");
+    } finally {
+      setIsloading(false);
     }
   };
   const handleResend = async () => {
@@ -75,6 +79,7 @@ const VerifyOtpPage = () => {
       }
     } catch (error) {
       toast.error(error.message || "an error occured. please try again");
+    } finally {
     }
   };
   return (
@@ -106,8 +111,16 @@ const VerifyOtpPage = () => {
         <button
           onClick={handleVerify}
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:ng-blue-700 transition duration-300 mb-4"
+          disabled={isloading}
         >
-          Verify
+          {isloading ? (
+            <div className="flex gap-2 justify-center items-center">
+              <ClipLoader size={20} color="#f43f5e" />
+              verifying...
+            </div>
+          ) : (
+            "Verify"
+          )}
         </button>
         <button
           onClick={handleResend}

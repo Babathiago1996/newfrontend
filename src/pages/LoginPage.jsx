@@ -6,11 +6,13 @@ import { useForm } from "react-hook-form";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { Link } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { ClipLoader } from "react-spinners";
 
 import team from "../assets/prettyface.jpg";
 
 const LoginPage = () => {
   const [showpassword, setShowPassword] = useState(false);
+  const [isloading, setIsloading] = useState(false);
 
   const {
     register,
@@ -21,6 +23,8 @@ const LoginPage = () => {
   const { user, dispatch } = useAuthContext();
   const handleLogin = async (data) => {
     const { email, password } = data;
+    setIsloading(true);
+
     try {
       const response = await fetch(
         "https://newbackendfresh.onrender.com/api/user/login",
@@ -40,10 +44,12 @@ const LoginPage = () => {
 
         navigate("/");
       } else {
-        toast.error(json.error || json.message);
+        toast.error(json.error || json.message || "Login failed");
       }
     } catch (error) {
       toast.error(error.message || "registration Failed");
+    } finally {
+      setIsloading(false);
     }
   };
   return (
@@ -105,8 +111,15 @@ const LoginPage = () => {
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+            disabled={isloading}
           >
-            Login
+            {isloading ? (
+              <div className="flex gap-2 justify-center items-center">
+                <ClipLoader size={20} color="#32CD32" /> login....{" "}
+              </div>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
       </div>
