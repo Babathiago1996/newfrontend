@@ -69,7 +69,7 @@ const RegisterPage = () => {
                   message: "Enter a valid email address",
                 },
               })}
-              className={`w-full p-2 border rounded outline-none ${
+              className={`w-full p-2 border  rounded-lg outline-none ${
                 errors.email
                   ? "border-red-500 border-2 "
                   : " border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -94,7 +94,7 @@ const RegisterPage = () => {
                   message: "Min 8 chars, upper, lower, number & special char",
                 },
               })}
-              className={`w-full p-2 border rounded outline-none
+              className={`w-full p-2 border rounded-lg outline-none 
                 ${
                   errors.password
                     ? "border-red-500 border-2"
