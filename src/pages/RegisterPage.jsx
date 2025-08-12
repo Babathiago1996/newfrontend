@@ -32,8 +32,10 @@ const RegisterPage = () => {
       );
       const json = await response.json();
       if (response.ok) {
-        toast.success(json.message);
-        navigate("/verify-otp", { state: { email: data.email } });
+        toast.success(json.message || "Registration Successful!");
+        setTimeout(() => {
+          navigate("/verify-otp", { state: { email: data.email } });
+        }, 800);
       } else {
         toast.error(json.message || "registration Failed");
       }

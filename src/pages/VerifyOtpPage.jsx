@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuthContext } from "../hooks/useAuthContext";
+import { ClipLoader } from "react-spinners";
 
 const VerifyOtpPage = () => {
   const { state } = useLocation();
@@ -29,11 +30,11 @@ const VerifyOtpPage = () => {
     return () => clearInterval(timer);
   }, [counter]);
   const handleVerify = async () => {
-    setIsloading(true);
     if (!otp || otp.length !== 4 || isNaN(otp)) {
       toast.error("please enter a valid 4-digit OTP");
       return;
     }
+    setIsloading(true);
     try {
       const response = await fetch(
         "https://newbackendfresh.onrender.com/api/user/verifyOtp",
@@ -80,8 +81,12 @@ const VerifyOtpPage = () => {
     } catch (error) {
       toast.error(error.message || "an error occured. please try again");
     } finally {
+      setIsloading(false);
     }
   };
+  if (!email) {
+    return null;
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg  w-full max-w-md">
@@ -110,7 +115,7 @@ const VerifyOtpPage = () => {
 
         <button
           onClick={handleVerify}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:ng-blue-700 transition duration-300 mb-4"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300 mb-4"
           disabled={isloading}
         >
           {isloading ? (

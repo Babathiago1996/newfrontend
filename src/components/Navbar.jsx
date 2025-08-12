@@ -21,14 +21,30 @@ const Navbar = () => {
 
         <nav className="flex items-center gap-6">
           {user && (
-            <><span className="hidden sm:inline">{user.email}</span>
-              <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-md transition">Logout</button>
+            <>
+              <span className="hidden sm:inline">{user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-md transition"
+              >
+                Logout
+              </button>
             </>
           )}
           {!user && (
             <div className="flex gap-4">
-               <Link to="/login" className="hover:text-gray-300 transition duration-200">Login</Link>
-              <Link to="/signUp" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md transition">Register</Link>
+              <Link
+                to="/login"
+                className="hover:text-gray-300 transition duration-200"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signUp"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md transition"
+              >
+                Register
+              </Link>
             </div>
           )}
         </nav>
