@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { ClipLoader } from "react-spinners";
+import { Link } from "react-router-dom";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 const VerifyOtpPage = () => {
   const { state } = useLocation();
@@ -46,10 +48,12 @@ const VerifyOtpPage = () => {
       );
       const json = await response.json();
       if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(json));
-        dispatch({ type: "LOGIN", payload: json });
-        toast.success(json.message);
-        navigate("/");
+        toast.success("Verification Successful!");
+        setTimeout(() => {
+          localStorage.setItem("user", JSON.stringify(json));
+          dispatch({ type: "LOGIN", payload: json });
+          navigate("/");
+        }, 2300);
       } else {
         toast.error(json.message || "OTP verification failed");
       }
@@ -90,6 +94,20 @@ const VerifyOtpPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg  w-full max-w-md">
+        <Link to="/signUp">
+          <button
+            className="flex items-center gap-1 px-4 py-2 mb-4 
+               text-sm font-medium text-gray-600 
+               border border-gray-300 rounded-full 
+               hover:bg-gray-100 hover:text-gray-800 
+               transition-all duration-200 ease-in-out
+               shadow-sm hover:shadow"
+          >
+            <IoIosArrowRoundBack size={20} />
+            Back
+          </button>
+        </Link>
+
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
           Verify OTP
         </h2>

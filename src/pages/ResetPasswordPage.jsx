@@ -3,35 +3,42 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Link } from "react-router-dom";
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { useForm } from "react-hook-form";
 
 const ResetPasswordPage = () => {
   const [counter, setCounter] = useState(60);
   const [showpassword, setShowPassword] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
 
   const { state } = useLocation();
   const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const email = state?.email;
   const navigate = useNavigate();
   useEffect(() => {
-    let timer;
-    if (counter > 0) {
-      timer = setInterval(() => {
+    const timer =
+      counter > 0 &&
+      setInterval(() => {
         setCounter((c) => c - 1);
       }, 1000);
-    }
+
     return () => clearInterval(timer);
   }, [counter]);
-  const handleReset = async (e) => {
-    e.preventDefault();
+  const handleReset = async (data) => {
+    const { newpassword } = data;
     if (!email) {
       toast.error(
-        "Email is missin. please restart the password reset process."
+        "Email is missing. please restart the password reset process."
       );
       return;
     }
-    if (!otp || !newPassword) {
+    if (!otp || !newpassword) {
       toast.error("please fill in all field");
       return;
     }
@@ -44,7 +51,7 @@ const ResetPasswordPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, otp, newPassword }),
+          body: JSON.stringify({ email, otp, newpassword }),
         }
       );
       const json = await response.json();
@@ -54,11 +61,11 @@ const ResetPasswordPage = () => {
           navigate("/");
 
           localStorage.setItem("user", JSON.stringify(json));
-        }, 2000);
+        }, 2300);
       } else {
         if (json.error?.message?.toLowerCase().includes("expired")) {
           toast.error("OTP has expired. please request a new one");
-        } else if (json.message?.message?.toLowerCase().includes("invalid")) {
+        } else if (json.message?.toLowerCase().includes("invalid")) {
           toast.error("incorrect OTP. please try again. ");
         } else {
           const errorMessage =
@@ -103,7 +110,21 @@ const ResetPasswordPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <form onSubmit={handleReset} className="space-y-6">
+        <Link to="/forgot-password">
+          <button
+            className="flex items-center gap-1 px-4 py-2 mb-4 
+                       text-sm font-medium text-gray-600 
+                       border border-gray-300 rounded-full 
+                       hover:bg-gray-100 hover:text-gray-800 
+                       transition-all duration-200 ease-in-out
+                       shadow-sm hover:shadow"
+          >
+            <IoIosArrowRoundBack size={20} />
+            Back
+          </button>
+        </Link>
+
+        <form onSubmit={handleSubmit(handleReset)} className="space-y-6">
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
             Reset Password
           </h2>
@@ -131,10 +152,20 @@ const ResetPasswordPage = () => {
             </label>
             <input
               type={showpassword ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
               placeholder="New Password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register("newpassword", {
+                required: "Password is required",
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/,
+                  message: "Min 8 chars, upper, lower, number & special char",
+                },
+              })}
+              className={`w-full p-2 border rounded-lg outline-none 
+                ${
+                  errors.newpassword
+                    ? "border-red-400 border-2"
+                    : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                }`}
             />
             <div
               className="absolute top-10 right-3 cursor-pointer text-gray-600"
@@ -146,11 +177,20 @@ const ResetPasswordPage = () => {
                 <AiOutlineEye size={20} />
               )}
             </div>
+            {errors.newpassword && (
+              <p className="text-sm text-red-400 mt-1">
+                {errors.newpassword.message}
+              </p>
+            )}
           </div>
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+            className={`w-full text-white p-2 rounded transition duration-200 ${
+              isValid
+                ? " bg-blue-500  hover:bg-blue-600"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={loading || !isValid}
           >
             {loading ? "Resetting..." : "Reset Password"}
           </button>
@@ -161,7 +201,11 @@ const ResetPasswordPage = () => {
                 type="button"
                 onClick={handleResendOTP}
                 disabled={counter > 0}
-                className="text-blue-600 font-medium hover:underline"
+                className={`font-medium ${
+                  counter > 0
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-blue-600 hover:underline"
+                }`}
               >
                 {" "}
                 Resend OTP {counter > 0 ? `in ${counter}s` : ""}

@@ -10,7 +10,7 @@ createRoot(document.getElementById("root")).render(
     <AuthContextProvider>
       <WorkoutsProvider>
         <App />
-        <ToastContainer autoClose={3000} position="top-right" />
+        <ToastContainer autoClose={2000} position="top-right" />
       </WorkoutsProvider>
     </AuthContextProvider>
   </StrictMode>

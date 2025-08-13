@@ -37,11 +37,12 @@ const LoginPage = () => {
       );
       const json = await response.json();
       if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(json));
-        dispatch({ type: "LOGIN", payload: json });
-        toast.success(json.message);
-
-        navigate("/");
+        toast.success(json.message ||"Login Successful!");
+        setTimeout(() => {
+          localStorage.setItem("user", JSON.stringify(json));
+          dispatch({ type: "LOGIN", payload: json });
+          navigate("/");
+        }, 2300);
       } else {
         toast.error(json.error || json.message || "Login failed");
       }
