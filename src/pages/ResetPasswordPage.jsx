@@ -17,7 +17,6 @@ const ResetPasswordPage = () => {
   } = useForm({ mode: "onChange" });
 
   const { state } = useLocation();
-  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const email = state?.email;
   const navigate = useNavigate();
@@ -31,14 +30,14 @@ const ResetPasswordPage = () => {
     return () => clearInterval(timer);
   }, [counter]);
   const handleReset = async (data) => {
-    const { newpassword } = data;
+    const { newPassword, otp } = data;
     if (!email) {
       toast.error(
         "Email is missing. please restart the password reset process."
       );
       return;
     }
-    if (!otp || !newpassword) {
+    if (!otp || !newPassword) {
       toast.error("please fill in all field");
       return;
     }
@@ -51,25 +50,26 @@ const ResetPasswordPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, otp, newpassword }),
+          body: JSON.stringify({ email, otp, newPassword }),
         }
       );
       const json = await response.json();
       if (response.ok) {
-        toast.success(json.message || "password reset successfully!");
-        setTimeout(() => {
-          navigate("/");
-
-          localStorage.setItem("user", JSON.stringify(json));
-        }, 2300);
+        toast.success(json.message || "password reset successfully!", {
+          onClose: () => navigate("/login"),
+        });
       } else {
-        if (json.error?.message?.toLowerCase().includes("expired")) {
+        const errorMessage =
+          json.message || json.error || json.error?.message || "Reset failed ";
+        if (errorMessage.toLowerCase().includes("expired")) {
           toast.error("OTP has expired. please request a new one");
-        } else if (json.message?.toLowerCase().includes("invalid")) {
+        } else if (errorMessage.toLowerCase().includes("invalid")) {
           toast.error("incorrect OTP. please try again. ");
+        } else if (errorMessage.toLowerCase().includes("same password")) {
+          toast.error(
+            "you cannot reuse your old password. please choose a different one."
+          );
         } else {
-          const errorMessage =
-            json?.message || json?.error?.message || "Reset failed ";
           toast.error(errorMessage);
         }
       }
@@ -138,22 +138,33 @@ const ResetPasswordPage = () => {
             <input
               type="text"
               placeholder="OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              maxLength={4}
+              {...register("otp", {
+                required: "OTP is required",
+                pattern: {
+                  value: /^[0-9]{4}$/,
+                  message: "OTP must be a 4-digit number",
+                },
+              })}
+              className={`w-full p-2 border rounded-lg outline-none 
+    ${
+      errors.otp
+        ? "border-red-400 border-2"
+        : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+    }`}
             />
+            {errors.otp && (
+              <p className="text-red-400 text-sm">{errors.otp.message}</p>
+            )}
           </div>
           <div className="mb-6 relative">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Enter Password
             </label>
             <input
               type={showpassword ? "text" : "password"}
               placeholder="New Password"
-              {...register("newpassword", {
+              {...register("newPassword", {
                 required: "Password is required",
                 pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/,
@@ -162,7 +173,7 @@ const ResetPasswordPage = () => {
               })}
               className={`w-full p-2 border rounded-lg outline-none 
                 ${
-                  errors.newpassword
+                  errors.newPassword
                     ? "border-red-400 border-2"
                     : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 "
                 }`}
@@ -177,9 +188,9 @@ const ResetPasswordPage = () => {
                 <AiOutlineEye size={20} />
               )}
             </div>
-            {errors.newpassword && (
+            {errors.newPassword && (
               <p className="text-sm text-red-400 mt-1">
-                {errors.newpassword.message}
+                {errors.newPassword.message}
               </p>
             )}
           </div>
