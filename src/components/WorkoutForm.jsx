@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { FaClipboardCheck } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
 const WorkoutForm = () => {
   const [title, setTitle] = useState("");
@@ -25,23 +26,17 @@ const WorkoutForm = () => {
       return;
     }
     const workout = { title, load, reps };
-    const response = await fetch(
-      "https://newbackendfresh.onrender.com/api/workouts",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify(workout),
-      }
-    );
-    const json = await response.json();
-    if (!response.ok) {
+    const response = await api.post("/workouts", workout, {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
+    const json = response.data  // Adjust based on your api utility's response shape
+    if (response.status !== 200) {
       setError(json.error || "workout creation failed");
       toast.error("Error Adding Workout");
     }
-    if (response.ok) {
+    if (response.status === 200) {
       setError(null);
       setTitle("");
       setLoad("");

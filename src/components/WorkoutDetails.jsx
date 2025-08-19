@@ -4,6 +4,7 @@ import ShowModal from "./ShowModal";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useWorkoutContext } from "../hooks/useWorkoutContext";
+import api from "../utils/api";
 
 const WorkoutDetails = ({ workout }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -46,17 +47,13 @@ const WorkoutDetails = ({ workout }) => {
     }
     setIsDeleting(true);
     try {
-      const response = await fetch(
-        `https://newbackendfresh.onrender.com/api/workouts/${workout._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
-      const json = await response.json();
-      if (response.ok) {
+      const response = await api.delete(`/workouts/${workout._id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      const json = response.data;
+      if (response.status === 200) {
         setShowModal(false);
         dispatch({ type: "DELETE_WORKOUT", payload: json });
         toast.success("workout deleted");
@@ -91,19 +88,17 @@ const WorkoutDetails = ({ workout }) => {
     }
     const updateWorkout = { title, reps, load };
     try {
-      const response = await fetch(
-        `https://newbackendfresh.onrender.com/api/workouts/${workout._id}`,
+      const response = await fetch.patch(
+        `/workouts/${workout._id}`,
+        updateWorkout,
         {
-          method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
           },
-          body: JSON.stringify(updateWorkout),
         }
       );
-      const json = await response.json();
-      if (!response.ok) {
+      const json = response.data;
+      if (response.status !== 200) {
         setError(json.error || "Update Failed");
         toast.error("server error");
       } else {

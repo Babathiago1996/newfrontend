@@ -10,6 +10,7 @@ import { BiDumbbell } from "react-icons/bi";
 import { FiFrown } from "react-icons/fi";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { Link } from "react-router-dom";
+import api from "../utils/api";
 
 const Home = () => {
   const { workouts, dispatch } = useWorkoutContext();
@@ -26,27 +27,19 @@ const Home = () => {
     }
     const fetchdata = async () => {
       try {
-        const response = await fetch(
-          "https://newbackendfresh.onrender.com/api/workouts",
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        const json = await response.json();
+        const response = await api.get("/workouts", {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
 
-        if (response.ok) {
-          dispatch({ type: "SET_WORKOUTS", payload: json });
-          if (json.length === 0 && !hasShownToast.current) {
+        if (response.status === 200) {
+          dispatch({ type: "SET_WORKOUTS", payload: response.data });
+          if (response.data.length === 0 && !hasShownToast.current) {
             toast.info("No workouts Found");
             hasShownToast.current = true;
           }
-        } else {
-          toast.error(json?.error || "Failed to fetch workouts");
         }
       } catch (error) {
-        toast.error("Network error fetching workouts");
+        toast.error(error.response?.data?.error || "failed to fetch workouts");
       } finally {
         setisLoading(false);
       }

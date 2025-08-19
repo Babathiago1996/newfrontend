@@ -6,13 +6,16 @@ import { useForm } from "react-hook-form";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { Link } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+// import { useLocation } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import api from "../utils/api";
 
 import team from "../assets/prettyface.jpg";
 
 const LoginPage = () => {
   const [showpassword, setShowPassword] = useState(false);
   const [isloading, setIsloading] = useState(false);
+ 
 
   const {
     register,
@@ -20,34 +23,31 @@ const LoginPage = () => {
     formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
   const navigate = useNavigate();
-  const { user, dispatch } = useAuthContext();
+  const { dispatch } = useAuthContext();
   const handleLogin = async (data) => {
     setIsloading(true);
 
     try {
-      const response = await fetch(
-        "https://newbackendfresh.onrender.com/api/user/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: data.email, password: data.password }),
-        }
-      );
-      const json = await response.json();
-      if (response.ok) {
-        toast.success(json.message ||"Login Successful!");
+      const response = await api.post("/user/login", {
+        email: data.email,
+        password: data.password,
+      });
+
+      if (response.status === 200) {
+        toast.success(response.data.message || "Login Successful!");
         setTimeout(() => {
-          localStorage.setItem("user", JSON.stringify(json));
-          dispatch({ type: "LOGIN", payload: json });
+          localStorage.setItem("user", JSON.stringify(response.data));
+          dispatch({ type: "LOGIN", payload: response.data });
           navigate("/");
         }, 2300);
-      } else {
-        toast.error(json.error || json.message || "Login failed");
       }
     } catch (error) {
-      toast.error(error.message || "registration Failed");
+      toast.error(
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          error.message ||
+          "Login failed"
+      );
     } finally {
       setIsloading(false);
     }
