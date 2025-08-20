@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import ShowModal from "./ShowModal";
 import { ToastContainer, toast } from "react-toastify";
@@ -16,6 +16,7 @@ const WorkoutDetails = ({ workout }) => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [isdeleting, setIsDeleting] = useState(false);
   const { dispatch } = useWorkoutContext();
+  const [isloading, setIsloading] = useState(false);
 
   const { user } = useAuthContext();
   const openModal = () => {
@@ -63,6 +64,8 @@ const WorkoutDetails = ({ workout }) => {
         toast.error("server error");
       }
     } catch (error) {
+      toast.error("Network error");
+    } finally {
       setIsDeleting(false);
     }
   };
@@ -75,9 +78,10 @@ const WorkoutDetails = ({ workout }) => {
   };
   const handleSave = async () => {
     if (!user) {
-      toast.error("you must be logged in");
+      toast.error("You must be logged in");
       return;
     }
+
     if (
       title === workout.title &&
       load === workout.load &&
@@ -86,30 +90,36 @@ const WorkoutDetails = ({ workout }) => {
       setIsEditing(false);
       return;
     }
+
+    setIsloading(true);
+
     const updateWorkout = { title, reps, load };
+
     try {
-      const response = await fetch.patch(
+      const response = await api.patch(
         `/workouts/${workout._id}`,
         updateWorkout,
         {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
+          headers: { Authorization: `Bearer ${user.token}` },
         }
       );
       const json = response.data;
-      if (response.status !== 200) {
-        setError(json.error || "Update Failed");
-        toast.error("server error");
-      } else {
-        setError(null);
-        setIsEditing(false);
-        toast.success("Workout Updated Successfully");
 
-        window.location.reload();
+      if (response.status === 200) {
+        dispatch({ type: "UPDATE_WORKOUT", payload: json });
+        setIsEditing(false);
+        toast.success("Workout updated successfully");
+        setTimeout(() => {
+          window.location.reload();
+        }, 700);
+      } else {
+        setError(json.error || "Update failed");
+        toast.error("Server error");
       }
-    } catch (error) {
+    } catch {
       toast.error("Network error");
+    } finally {
+      setIsloading(false);
     }
   };
 
@@ -151,8 +161,9 @@ const WorkoutDetails = ({ workout }) => {
                 <button
                   onClick={handleSave}
                   className="text-[15px] px-4 py-2 transition font-medium rounded-md bg-yellow-400 hover:bg-yellow-500 text-white"
+                  disabled={isloading}
                 >
-                  Save
+                  {isloading ? "Saving..." : "Save"}
                 </button>
                 <button
                   onClick={handleCancel}

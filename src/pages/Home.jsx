@@ -47,6 +47,7 @@ const Home = () => {
 
     fetchdata();
   }, [dispatch, user]);
+  
   return (
     <div className="bg-image min-h-screen py-10 px-4">
       <div className=" flex flex-col md:flex-row  gap-8 max-w-7xl mx-auto">
